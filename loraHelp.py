@@ -23,7 +23,7 @@ import zipfile
 import tempfile
 import shutil
 
-temp_directory = r'L:\\temp'  # Directory temporanea per il trattamento dei file
+temp_directory = r'L:\\temp'  # Temporary directory for file processing
 
 def remove_headers_footers(text):
     """Removes headers and footers from extracted text."""
