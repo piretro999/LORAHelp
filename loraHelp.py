@@ -26,14 +26,14 @@ import shutil
 temp_directory = r'L:\\temp'  # Directory temporanea per il trattamento dei file
 
 def remove_headers_footers(text):
-    """Rimuove le intestazioni e i piedi di pagina da un testo estratto."""
+    """Removes headers and footers from extracted text."""
     lines = text.split('\n')
     if len(lines) > 3:
         return '\n'.join(lines[1:-1])
     return text
 
 def handle_text_file(file_path):
-    """Gestisce file di testo, rimuovendo intestazioni e piedi di pagina."""
+    """Manages text files, removing headers and page feet."""
     try:
         with open(file_path, 'r', encoding='utf-8', errors='replace') as file:
             text = file.read()
@@ -42,7 +42,7 @@ def handle_text_file(file_path):
         return f"Failed to read or process text file: {str(e)}", None
 
 def handle_pdf_file(file_path):
-    """Estrae testo da file PDF usando PyMuPDF."""
+    """Extracts text from PDF files using PyMuPDF."""
     try:
         doc = fitz.open(file_path)
         text = [page.get_text("text") for page in doc]
@@ -52,7 +52,7 @@ def handle_pdf_file(file_path):
         return f"Failed to process PDF file: {str(e)}", None
 
 def handle_word_file(file_path):
-    """Estrae testo da file Word (.docx) usando python-docx."""
+    """Extracts text from Word (.docx, .doc) files using python-docx."""
     try:
         doc = Document(file_path)
         text = '\n'.join([para.text for para in doc.paragraphs])
@@ -61,7 +61,7 @@ def handle_word_file(file_path):
         return f"Failed to process Word file: {str(e)}", None
 
 def handle_ppt_file(file_path):
-    """Estrae testo da presentazioni PowerPoint (.pptx)."""
+    """Extracts text from PowerPoint presentations (.pptx, .ppt)."""
     try:
         ppt = Presentation(file_path)
         text = [shape.text for slide in ppt.slides for shape in slide.shapes if hasattr(shape, "text")]
@@ -70,7 +70,7 @@ def handle_ppt_file(file_path):
         return f"Failed to process PowerPoint file: {str(e)}", None
 
 def handle_excel_file(file_path):
-    """Converte fogli di calcolo Excel in formato CSV."""
+    """Converts Excel spreadsheets to CSV format."""
     try:
         df = pd.read_excel(file_path)
         return df.to_csv(index=False), file_path
@@ -78,7 +78,7 @@ def handle_excel_file(file_path):
         return f"Failed to process Excel file: {str(e)}", None
 
 def handle_csv_file(file_path):
-    """Legge file CSV e li ritrasforma in stringhe CSV standardizzate."""
+    """Reads CSV files and transforms them back into standardized CSV strings."""
     try:
         with open(file_path, mode='r', encoding='utf-8', newline='') as f:
             reader = csv.reader(f)
@@ -88,7 +88,7 @@ def handle_csv_file(file_path):
         return f"Failed to process CSV file: {str(e)}", None
 
 def handle_epub_file(file_path):
-    """Legge e pulisce il testo HTML dai file EPUB."""
+    """Reads and cleans HTML text from EPUB files."""
     try:
         book = epub.read_epub(file_path)
         text = []
@@ -101,7 +101,7 @@ def handle_epub_file(file_path):
         return f"Failed to process EPUB file: {str(e)}", None
 
 def handle_xml_gan_file(file_path):
-    """Estrae testo da file XML e GAN utilizzando ElementTree."""
+    """Extracts text from XML and GAN files using ElementTree."""
     try:
         tree = ET.parse(file_path)
         root = tree.getroot()
@@ -111,7 +111,7 @@ def handle_xml_gan_file(file_path):
         return f"Failed to process XML/GAN file: {str(e)}", None
 
 def handle_audio_file(file_path):
-    """Converte audio in testo utilizzando la libreria SpeechRecognition."""
+    """Converts audio to text using the SpeechRecognition library."""
     if file_path.lower().endswith('.m4a'):
         sound = AudioSegment.from_file(file_path, format='m4a')
         wav_path = file_path.replace('.m4a', '.wav')
@@ -129,26 +129,26 @@ def handle_audio_file(file_path):
             return f"Speech recognition request failed; {e}", file_path
 
 def handle_generic_video_file(file_path):
-    """Gestisce file video per riconoscimento del parlato dall'audio estratto."""
+    """Handles video files for speech recognition from extracted audio."""
     audio_path = extract_audio_from_video(file_path)
     text = transcribe_audio(audio_path)
     os.remove(audio_path)  # Cleanup temporary audio file
     return text, file_path
 
 def extract_audio_from_video(video_path):
-    """Estrae la traccia audio da un file video e la salva temporaneamente come file WAV."""
+    """Extracts the audio track from a video file and temporarily saves it as a WAV file."""
     video = VideoFileClip(video_path)
     audio_path = os.path.join(temp_directory, "temp_audio.wav")
     video.audio.write_audiofile(audio_path)
     return audio_path
 
 def transcribe_audio(audio_path):
-    """Converte l'audio in testo utilizzando Google Speech Recognition, impostando l'italiano come lingua predefinita."""
+    """Converts audio to text using Google Speech Recognition, setting Italian as the default language."""
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_path) as source:
-        audio_data = recognizer.record(source)  # Registra l'audio dall'intero file
+        audio_data = recognizer.record(source)  # Record audio from the entire file
         try:
-            # Utilizza 'it-IT' per impostare l'italiano come lingua di riconoscimento
+            # Use 'en-IT' to set Italian as the recognition language
             return recognizer.recognize_google(audio_data, language='it-IT')
         except sr.UnknownValueError:
             return "Speech not understood"
@@ -156,14 +156,14 @@ def transcribe_audio(audio_path):
             return f"Could not request results; {e}"
 
 def write_to_output(content, output_dir, file_index, original_path):
-    """Scrive il contenuto elaborato in un file di output, annotando il percorso del file originale."""
+    """Writes the processed content to an output file, noting the path to the original file."""
     output_file_path = os.path.join(output_dir, f'modello_{file_index}.txt')
     with open(output_file_path, 'a', encoding='utf-8') as file:
         file.write(f"Original file path: {original_path}\n{content}\n")
     return file_index + 1  # Incrementa l'indice per il prossimo file
 
 def handle_zip_file(zip_path):
-    """Gestisce i file all'interno di un archivio ZIP, estraendo e analizzando i file contenuti."""
+    """Manages files within a ZIP archive, extracting and analyzing the contained files."""
     with zipfile.ZipFile(zip_path, 'r') as z:
         z.extractall(temp_directory)
         extracted_files = z.namelist()
@@ -177,8 +177,8 @@ def handle_zip_file(zip_path):
     return "No supported files found or failed to process", None
 
 def explore_directory(directory, output_dir, ignore_dirs, process_subfolders):
-    """Esplora directory e processa file secondo specifiche, escludendo cartelle ignorate."""
-    file_index = 1  # Inizializza l'indice del file di output
+    """It explores directories and processes files according to specifications, excluding ignored folders."""
+    file_index = 1  # Initialize the index of the output file
     for root, dirs, files in os.walk(directory):
         dirs[:] = [d for d in dirs if os.path.join(root, d) not in ignore_dirs]
         if not process_subfolders:
@@ -194,7 +194,7 @@ def explore_directory(directory, output_dir, ignore_dirs, process_subfolders):
                 print(content)
 
 def handle_file(file_path):
-    """Determina il tipo di file e applica la funzione di gestione appropriata."""
+    """Determines the file type and applies the appropriate management function."""
     extension = os.path.splitext(file_path)[1].lower()
     handler = {
         '.txt': handle_text_file,
