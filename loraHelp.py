@@ -209,6 +209,7 @@ def handle_file(file_path):
         '.xlsx': handle_excel_file,
         '.xml': handle_xml_gan_file,
         '.gan': handle_xml_gan_file,
+        '.xsd': handle_xml_gan_file,
         '.wav': handle_audio_file,
         '.mp3': handle_audio_file,
         '.m4a': handle_audio_file,
