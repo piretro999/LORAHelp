@@ -228,9 +228,9 @@ def handle_file(file_path):
     return "Unsupported file format for {}".format(file_path), None
 
 if __name__ == "__main__":
-    directories = [r'C:\\$personale\\$$cv']
+    directories = [r'C:\\someFolder']
     output_path = r'E:\\LoRA'
-    ignore_dirs = [r'L:\\BIGME\\', r'L:\\foto', r'L:\\foto chantal', r'L:\\emule', r'L:\\Emulators', r'L:\\Emulation', r'L:\\HTG', r'L:\\program files']
+    ignore_dirs = [r'L:\\AFolderTobeIgnored\\', r'L:\\someOther']
     process_subfolders = True
     for directory in directories:
         explore_directory(directory, output_path, ignore_dirs, process_subfolders)
